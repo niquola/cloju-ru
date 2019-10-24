@@ -1,0 +1,13 @@
+version: '3.1'
+services:
+  itgm-db:
+    image: aidbox/db:11.4.0
+    container_name: itgm
+    ports:
+      - "${PGPORT}:5432"
+    volumes:
+      - "./pgdata:/data"
+    environment:
+      POSTGRES_USER:     "${PGUSER}" 
+      POSTGRES_PASSWORD: "${PGPASSWORD}" 
+      POSTGRES_DB:       "${PGDATABASE}"
