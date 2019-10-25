@@ -36,5 +36,5 @@ all: jar docker pub deploy
 	echo "Done"
 
 test:
-	clj -A:test:runner
+	clj -A:back:front:test:runner
 

@@ -80,7 +80,7 @@
           start (System/currentTimeMillis)]
       (try
         (let [res (jdbc/query db sql)]
-          ;; (println :query sql)
+          (println :query sql)
           res)
         (catch Exception e
           (println :query sql)
@@ -297,6 +297,57 @@
           (swap! st (fn [s] (-> s
                                 (clojure.core/update :cnt inc)
                                 (clojure.core/update :msgs conj msgtxt)))))))))
+
+(defn resource-table [db tp]
+  (exec! db (format
+             "create table if not exists
+%s (
+  id text primary key,
+  ts timestamptz default current_timestamp,
+  resource jsonb
+)
+" (name tp)))
+
+  )
+
+(defn truncate [db tp]
+  (exec! db (format "truncate table %s" (name tp))))
+
+(defn row-to-resource [{res :resource id :id ts :ts :as row}]
+  (when row
+    (assoc res :id id :ts ts)))
+
+(defn create-resource [db tp res]
+  (->
+   (insert db
+           {:table tp}
+           {:id (:id res)
+            :resource (dissoc res :id)})
+   (row-to-resource)))
+
+(defn read-resource [db tp res]
+  (->
+   (query-first db {:select [:*] :from [tp] :where [:= :id (:id res)]})
+   (row-to-resource)))
+
+(defn update-resource [db tp res]
+  (->
+   (do-update db {:table tp} {:id (:id res) :resource (dissoc res :id)})
+   (row-to-resource)))
+
+(defn delete-resource [db tp res]
+  (->
+   (query-first db
+                {:delete-from tp
+                 :where [:= :id (:id res)]
+                 :returning [:*]})
+   (row-to-resource)))
+
+(defn query-resources [db q]
+  (->> (query db q)
+       (mapv row-to-resource)))
+
+
 
 (comment
 

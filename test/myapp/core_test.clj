@@ -14,6 +14,15 @@
    {:uri "/ups"}
    {:status 404})
 
+  (tsys/truncate :camps)
+
+  (tsys/create-resource :camps {:id "mt" :display "Monad transformers"})
+  (tsys/create-resource :camps {:id "vjs" :display "Vui.js futurre"})
+
+  (tsys/match
+   {:uri "/camps/vjs"}
+   {:status 200
+    :body {:id "vjs"}})
 
   
 

@@ -13,6 +13,7 @@
 
             [app.pages]
             [app.welcome.core]
+            [app.camps.core]
             [garden.core :as garden]))
 
 (defn style [css]

@@ -3,8 +3,9 @@
             [re-frame.core :as rf]
             [route-map.core :as route-map]))
 
-(def routes {:. :welcome/index})
-
+(def routes {:. :welcome/index
+             "camps" {[:id] {:. :camps/show}
+                      "new" {:. :camps/new}}})
 
 (defn to-query-params [params]
   (->> params

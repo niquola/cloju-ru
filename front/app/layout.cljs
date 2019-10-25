@@ -8,7 +8,8 @@
  (fn [db _]
    {:title "INC"
     :menu [{:href (href "") :display "Home"}
-           {:href (href "new") :display "New"}]}))
+
+           {:href (href  "camps" "new") :display "New"}]}))
 
 (def style (app.styles/styles
             [:nav

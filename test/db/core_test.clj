@@ -53,5 +53,26 @@ create table tests (
                          :order-by [:id]}))
    [{:id 1} {:id 2}])
 
+  (testing "crud"
+    (sut/resource-table db :users)
+    (sut/truncate db :users)
+    (sut/create-resource db :users {:id "u-1" :name "niquola"})
+    (matcho/match
+     (sut/read-resource db :users {:id "u-1"})
+     {:id "u-1"
+      :name "niquola"})
+
+    (sut/update-resource db :users {:id "u-1" :name "nicola"})
+    (matcho/match
+     (sut/read-resource db :users {:id "u-1"})
+     {:id "u-1"
+      :name "nicola"})
+
+    (matcho/match
+     (sut/delete-resource db :users {:id "u-1"})
+     {:id "u-1"})
+
+    )
+
   )
 
