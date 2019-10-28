@@ -6,7 +6,6 @@
             [zframes.routing]
             [zframes.redirect]
             [zframes.xhr]
-            [zframes.debounce]
 
             [app.routes]
             [app.layout]
@@ -14,6 +13,7 @@
             [app.pages]
             [app.welcome.core]
             [app.camps.core]
+            [app.demo.core]
             [garden.core :as garden]))
 
 (defn style [css]

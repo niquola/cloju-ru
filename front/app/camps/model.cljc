@@ -70,8 +70,27 @@
   [data & _]
   data)
 
+(defn create-camp
+  [{db :db} & _]
+  (let [form (get-in db form-path)
+        {errs :errors val :value} (zf/eval-form form)]
+    (if (empty? errs)
+      {:json/fetch {:uri  "/camps/"
+                    :method :post
+                    :body val
+                    :success {:event ::saved}
+                    :error   {:event ::save-failed}}}
+      {})))
+
+(defn saved [fx [_ {data :data}]]
+  {:redirect {:url (href "camps" (:id data)) }})
+
+(defn save-failed [{db :db} [_ {err :data}]]
+  {:db (update db new-key assoc :status :error :error err)})
+
 (rf/reg-event-fx new-key new)
 (rf/reg-sub ::new (fn [db & _] (get db new-key)))
-(rf/reg-sub new-key
-            :<- [::new]
-            new-sub)
+(rf/reg-sub new-key :<- [::new] new-sub)
+(rf/reg-event-fx :camps/create create-camp)
+(rf/reg-event-fx ::save-failed save-failed)
+(rf/reg-event-fx ::saved saved)

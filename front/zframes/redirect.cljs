@@ -11,9 +11,9 @@
   (set! (.-hash (.-location js/window)) url))
 
 (rf/reg-fx
- ::redirect
+ :redirect
  (fn [opts]
-   (redirect (str (:uri opts)
+   (redirect (str (:url opts)
                        (when-let [params (:params opts)]
                          (window-location/gen-query-string params))))))
 (rf/reg-event-fx

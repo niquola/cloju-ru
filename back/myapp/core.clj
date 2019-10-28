@@ -9,7 +9,6 @@
   {:status 200
    :body "Hello"})
 
-
 (defn camps [{db :db {{q :q} :params} :request}]
   {:status 200
    :body (db.core/query-resources db (cond->
@@ -19,17 +18,30 @@
                                                       (str "%" q "%")])))})
 
 (defn get-camp [{db :db {{id :id} :route-params :as req} :request}]
-  (println req)
   (if-let [res (db.core/read-resource db :camps {:id id})]
     {:status 200
      :body res}
     {:status 404}))
 
+(defn create-camp [{db :db {data :resource} :request}]
+  (let [res (db.core/create-resource db :camps (update data :id (fn [x] (or x (java.util.UUID/randomUUID)))))]
+    {:status 200
+     :body res}))
+
 (def routes
   {:GET #'index
    "camps" {:GET #'camps
-            [:id] {:GET #'get-camp}}})
+            [:id] {:GET #'get-camp}
+            :POST #'create-camp}})
 
+
+(comment
+  (route-map/match [:get "/users/u-1"]
+                   {"users" {[:id] {:GET 'handler}}})
+
+  (route-map/match [:get "/"] routes)
+
+  )
 
 (defn handler [{req :request :as ctx}]
   (let [route   (route-map/match [(or (:request-method req) :get) (:uri req)] routes)]
@@ -66,39 +78,34 @@
 (defn db-from-env []
   (db.core/db-spec-from-env))
 
-
-
 (defn -main [& args]
-  (start {:db (db-from-env) 
-          :web {}}))
+  (start {:db (db-from-env) :web {}}))
 
 (comment
   (db.core/db-spec-from-env)
 
-  (def ctx (start {:db (db.core/db-spec-from-env)
-                   :web {}}))
+  (def ctx (start {:db (db.core/db-spec-from-env) :web {}}))
 
   (def db (:db @ctx))
+
+  (dispatch ctx {:uri "/"})
+  (dispatch ctx {:uri "/db/tables" :params {:q "class"}})
+  (dispatch ctx {:uri "/" :params {:q "class"}})
+
 
   (migrate db)
 
   (db.core/query db "select * from camps")
 
 
-
   (db.core/create-resource db :camps {:id "clj" :display "Land of Clojure"})
   (db.core/truncate db :camps)
 
-  (doseq [i (range 50)]
+  (doseq [[i disp] [[1 "python"] [2 "ruby"] [3 "clojure"]]]
     (db.core/create-resource
      db :camps
-     {:id (str "i-" i)
-      :display (str "Item " i)}))
-
-  (dispatch ctx {:uri "/"})
-  (dispatch ctx {:uri "/db/tables" :params {:q "class"}})
+     {:id (str "i-" i) :display disp}))
 
   (stop ctx)
 
-  (db.core)
   )

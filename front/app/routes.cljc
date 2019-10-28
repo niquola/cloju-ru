@@ -4,6 +4,7 @@
             [route-map.core :as route-map]))
 
 (def routes {:. :welcome/index
+             "demo" {:. :demo/index}
              "camps" {[:id] {:. :camps/show}
                       "new" {:. :camps/new}}})
 

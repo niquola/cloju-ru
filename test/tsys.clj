@@ -74,6 +74,8 @@
 (defn delete-resource [tp res]
   (db.core/delete-resource (db) tp res))
 
+(defn exec! [sql]
+  (db.core/exec! (db) sql))
 
 
 (defn json-fetch [{:keys [uri token headers is-fetching-path params success error] :as opts}]

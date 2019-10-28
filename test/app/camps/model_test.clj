@@ -11,7 +11,7 @@
 
 
 (defn input [k v]
-  (rf/dispatch [:zf/set-value sut/form-path [v] v]))
+  (rf/dispatch [:zf/set-value sut/form-path [k] v]))
 
 (defn form []
   (zf/eval-form (get-in @tsys/app-db sut/form-path)))
@@ -29,6 +29,9 @@
 
   (def page (rf/subscribe [:camps/new]))
 
+
+  @page
+
   (:form (:camps/new @tsys/app-db))
 
   (keys @tsys/app-db)
@@ -41,7 +44,9 @@
 
   (input :display "My camp")
 
-  (matcho/match (form) {:errors empty})
+  (matcho/match (form) {:errors empty?})
+
+  (rf/dispatch [:camps/create])
 
 
   )

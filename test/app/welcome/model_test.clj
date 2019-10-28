@@ -18,11 +18,15 @@
   (tsys/truncate :camps)
 
   (tsys/reset-app-db)
-  (tsys/open "/")
 
+  (tsys/re-open "/")
   ;; (rf/dispatch [:welcome/index :init {}])
 
+  @tsys/app-db
+
   (def page (rf/subscribe [:welcome/index]))
+
+  @page
 
   (matcho/match
    @page

@@ -64,10 +64,3 @@
 (rf/reg-event-db ::failed failed)
 (rf/reg-event-fx ::search do-search)
 
-(comment
-  (println "Here")
-
-  (rf/dispatch [page-key :init {}])
-
-
-  )

@@ -20,8 +20,16 @@
 
 (defn prepare-request [{meth :request-method qs :query-string body :body ct :content-type headers :headers :as req}]
   (let [params (when qs (form-decode qs))
+        fmt (get headers "content-type")
         params (if (string? params) {(keyword params) nil} params)]
-    (cond-> req params (update :params merge (or params {})))))
+    (cond-> req
+      params
+      (update :params merge (or params {}))
+
+      (and body (= "application/json" fmt))
+      (assoc :resource (cheshire.core/parse-string (if (string? body) body (slurp body))))
+
+      )))
 
 
 (defn handle-static [h {meth :request-method uri :uri :as req}]
